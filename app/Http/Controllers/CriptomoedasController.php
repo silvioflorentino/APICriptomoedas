@@ -16,11 +16,28 @@ class CriptomoedasController extends Controller
      */
     public function index()
     {
-        $regBook = Criptomoedas::All();
-        $contador = $regBook->count();
-
-        return Response()->json($regBook);
+        // Buscando todas as criptomoedas
+        $registros = Criptomoedas::all();
+    
+        // Contando o número de registros
+        $contador = $registros->count();
+    
+        // Verificando se há registros
+        if ($contador > 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Criptomoedas encontradas com sucesso!',
+                'data' => $registros,
+                'total' => $contador
+            ], 200); // Retorna HTTP 200 (OK) com os dados e a contagem
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Nenhuma criptomoeda encontrada.',
+            ], 404); // Retorna HTTP 404 (Not Found) se não houver registros
+        }
     }
+    
 
     /**
      * Store a newly created resource in storage.
@@ -62,17 +79,26 @@ class CriptomoedasController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Criptomoedas $id)
+    public function show($id)
     {
-        //
-         $regBook = Criptomoedas::find($id);
-
-        if($regBook){
-            return 'Criptomoedas Localizados: '.$regBook.Response()->json([],Response::HTTP_NO_CONTENT);
-        }else{
-            return 'Criptomoedas não localizados. '.Response()->json([],Response::HTTP_NO_CONTENT);
+        // Buscando a criptomoeda pelo ID
+        $registros = Criptomoedas::find($id);
+    
+        // Verificando se a criptomoeda foi encontrada
+        if ($registros) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Criptomoeda localizada com sucesso!',
+                'data' => $registros
+            ], 200); // Retorna HTTP 200 (OK) com os dados da criptomoeda
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Criptomoeda não localizada.',
+            ], 404); // Retorna HTTP 404 (Not Found) se a criptomoeda não for encontrada
         }
     }
+    
 
     /**
      * Update the specified resource in storage.
@@ -94,9 +120,9 @@ class CriptomoedasController extends Controller
     }
 
     // Encontrando a criptomoeda no banco
-    $regBookBanco = Criptomoedas::find($id);
+    $registrosBanco = Criptomoedas::find($id);
 
-    if (!$regBookBanco) {
+    if (!$registrosBanco) {
         return response()->json([
             'success' => false,
             'message' => 'Criptomoeda não encontrado'
@@ -104,16 +130,16 @@ class CriptomoedasController extends Controller
     }
 
     // Atualizando os dados
-    $regBookBanco->nomeLivro = $request->nomeLivro;
-    $regBookBanco->generoLivro = $request->generoLivro;
-    $regBookBanco->anoLivro = $request->anoLivro;
+    $registrosBanco->sigla = $request->sigla;
+    $registrosBanco->nome = $request->nome;
+    $registrosBanco->valor = $request->valor;
 
     // Salvando as alterações
-    if ($regBookBanco->save()) {
+    if ($registrosBanco->save()) {
         return response()->json([
             'success' => true,
             'message' => 'Criptomoeda atualizado com sucesso!',
-            'data' => $regBookBanco
+            'data' => $registrosBanco
         ], 200); // Retorna HTTP 200 se a atualização for bem-sucedida
     } else {
         return response()->json([
@@ -130,9 +156,9 @@ class CriptomoedasController extends Controller
     public function destroy($id)
 {
     // Encontrando a criptomoeda no banco
-    $regBook = Criptomoedas::find($id);
+    $registros = Criptomoedas::find($id);
 
-    if (!$regBook) {
+    if (!$registros) {
         return response()->json([
             'success' => false,
             'message' => 'cripotomoeda não encontrado'
@@ -140,7 +166,7 @@ class CriptomoedasController extends Controller
     }
 
     // Deletando a criptomoeda
-    if ($regBook->delete()) {
+    if ($registros->delete()) {
         return response()->json([
             'success' => true,
             'message' => 'Criptomoeda deletado com sucesso'
